@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Irregular Verbs Trainer</title>
+  <style>
+    body {
+      font-family: -apple-system, system-ui, Arial, sans-serif;
+      margin: 16px;
+      color: #111;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 8px;
+    }
+    p {
+      color: #555;
+      line-height: 1.4;
+      margin: 6px 0 12px;
+    }
+    .card {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid #eee;
+      border-radius: 12px;
+    }
+    .toprow {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .mini {
+      font-size: 13px;
+      color: #666;
+    }
+    .barwrap {
+      width: 100%;
+      height: 10px;
+      border: 1px solid #ddd;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #fff;
+      margin: 8px 0 14px;
+    }
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: #2a7;
+    }
+    .deword {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 8px 0 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .field {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fafafa;
+    }
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .field .inputs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    input {
+      font-size: 17px;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .inputs input {
+      flex: 1;
+      min-width: 180px;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .row button {
+      flex: 1;
+      min-width: 150px;
+    }
+    .ok {
+      color: #0a7a0a;
+      font-weight: 700;
+    }
+    .bad {
+      color: #b00020;
+      font-weight: 700;
+    }
+    .muted {
+      color: #666;
+    }
+    .warn {
+      background: #fff7e6;
+      border: 1px solid #ffe0a3;
+      padding: 10px;
+      border-radius: 10px;
+      color: #5b3b00;
+      margin-top: 10px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    .status {
+      margin-top: 12px;
+      white-space: pre-wrap;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 13px;
+    }
+    details {
+      margin-top: 10px;
+    }
+    details summary {
+      cursor: pointer;
+      user-select: none;
+    }
+    .bankitem {
+      margin: 4px 0;
+      line-height: 1.35;
+    }
+    .smallbtn {
+      font-size: 14px;
+      padding: 8px 10px;
+    }
+    .hintbox {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px dashed #ccc;
+      border-radius: 10px;
+      background: #fcfcfc;
+      color: #333;
+    }
+    noscript {
+      display: block;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #d00;
+      border-radius: 10px;
+      color: #700;
+    }
+  </style>
+</head>
+<body>
+  <h1>Irregular Verbs Trainer</h1>
+  <p>
+    Du siehst das <b>deutsche Wort</b>. Schreibe die drei englischen Formen:
+    <b>Infinitive</b>, <b>Simple Past</b> und <b>Past Participle</b>.
+    <br>
+    Wenn im Buch für eine Form <b>zwei Varianten</b> stehen, erscheinen hier auch <b>zwei Eingabefelder</b>.
+    Fehlerhafte Aufgaben kommen <b>erst nach mindestens 5 weiteren Fragen</b> wieder.
+  </p>
+
+  <noscript>
+    JavaScript ist deaktiviert. Bitte diese Seite in einem Browser öffnen, der JavaScript erlaubt.
+  </noscript>
+
+  <div class="card">
+    <div class="toprow">
+      <div class="mini" id="progressText">Fortschritt: 0%</div>
+      <div class="mini" id="progressNums"></div>
+      <div class="mini" id="reviewinfo"></div>
+      <div class="mini" id="qnum"></div>
+    </div>
+
+    <div class="barwrap">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="deword" id="deword">Lade Wort…</div>
+
+    <div class="hintbox">
+      Keine Hinweise oben. Nur unten in der Word Bank.
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label>Infinitive</label>
+        <div class="inputs" id="infWrap"></div>
+      </div>
+
+      <div class="field">
+        <label>Simple Past</label>
+        <div class="inputs" id="pastWrap"></div>
+      </div>
+
+      <div class="field">
+        <label>Past Participle</label>
+        <div class="inputs" id="ppWrap"></div>
+      </div>
+    </div>
+
+    <div id="feedback" style="margin-top:10px;"></div>
+
+    <div class="row">
+      <button id="btnCheck" type="button">✅ Prüfen</button>
+      <button id="btnShow" type="button">👁️ Lösung zeigen</button>
+    </div>
+
+    <div class="row">
+      <button id="btnNext" type="button" disabled>➡️ Nächste Frage</button>
+      <button id="btnSkip" type="button">⏭️ Überspringen</button>
+    </div>
+
+    <details>
+      <summary>📚 Word Bank anzeigen</summary>
+      <div class="hintbox" id="bankBox"></div>
+    </details>
+
+    <div class="row">
+      <button id="btnStatus" class="smallbtn" type="button">📊 Status</button>
+      <button id="btnRestart" class="smallbtn" type="button">🔄 Reset</button>
+    </div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const ITEMS = [
+    { id: 1,  de: "sein", infinitive:["be"], simplePast:["was","were"], pastParticiple:["been"] },
+    { id: 2,  de: "schlagen; besiegen", infinitive:["beat"], simplePast:["beat"], pastParticiple:["beaten"] },
+    { id: 3,  de: "werden", infinitive:["become"], simplePast:["became"], pastParticiple:["become"] },
+    { id: 4,  de: "beginnen; anfangen", infinitive:["begin"], simplePast:["began"], pastParticiple:["begun"] },
+    { id: 5,  de: "wetten", infinitive:["bet"], simplePast:["bet"], pastParticiple:["bet"] },
+    { id: 6,  de: "beißen", infinitive:["bite"], simplePast:["bit"], pastParticiple:["bitten"] },
+    { id: 7,  de: "(zer)brechen; kaputt machen", infinitive:["break"], simplePast:["broke"], pastParticiple:["broken"] },
+    { id: 8,  de: "(mit)bringen", infinitive:["bring"], simplePast:["brought"], pastParticiple:["brought"] },
+    { id: 9,  de: "bauen", infinitive:["build"], simplePast:["built"], pastParticiple:["built"] },
+    { id: 10, de: "(ver)brennen", infinitive:["burn"], simplePast:["burnt","burned"], pastParticiple:["burnt","burned"] },
+    { id: 11, de: "kaufen", infinitive:["buy"], simplePast:["bought"], pastParticiple:["bought"] },
+    { id: 12, de: "fangen", infinitive:["catch"], simplePast:["caught"], pastParticiple:["caught"] },
+    { id: 13, de: "(aus)wählen", infinitive:["choose"], simplePast:["chose"], pastParticiple:["chosen"] },
+    { id: 14, de: "kommen", infinitive:["come"], simplePast:["came"], pastParticiple:["come"] },
+    { id: 15, de: "kosten", infinitive:["cost"], simplePast:["cost"], pastParticiple:["cost"] },
+    { id: 16, de: "schneiden", infinitive:["cut"], simplePast:["cut"], pastParticiple:["cut"] },
+    { id: 17, de: "sich befassen (mit); umgehen (mit)", infinitive:["deal (with)"], simplePast:["dealt (with)"], pastParticiple:["dealt (with)"] },
+    { id: 18, de: "machen; tun", infinitive:["do"], simplePast:["did"], pastParticiple:["done"] },
+    { id: 19, de: "zeichnen; ziehen", infinitive:["draw"], simplePast:["drew"], pastParticiple:["drawn"] },
+    { id: 20, de: "träumen", infinitive:["dream"], simplePast:["dreamt","dreamed"], pastParticiple:["dreamt","dreamed"] },
+    { id: 21, de: "trinken", infinitive:["drink"], simplePast:["drank"], pastParticiple:["drunk"] },
+    { id: 22, de: "fahren", infinitive:["drive"], simplePast:["drove"], pastParticiple:["driven"] },
+    { id: 23, de: "essen", infinitive:["eat"], simplePast:["ate"], pastParticiple:["eaten"] },
+    { id: 24, de: "(hin)fallen", infinitive:["fall"], simplePast:["fell"], pastParticiple:["fallen"] },
+    { id: 25, de: "füttern; ernähren", infinitive:["feed"], simplePast:["fed"], pastParticiple:["fed"] },
+    { id: 26, de: "fühlen", infinitive:["feel"], simplePast:["felt"], pastParticiple:["felt"] },
+    { id: 27, de: "kämpfen; (sich) streiten", infinitive:["fight"], simplePast:["fought"], pastParticiple:["fought"] },
+    { id: 28, de: "finden", infinitive:["find"], simplePast:["found"], pastParticiple:["found"] },
+    { id: 29, de: "passen", infinitive:["fit"], simplePast:["fit","fitted"], pastParticiple:["fit","fitted"] },
+    { id: 30, de: "fliegen", infinitive:["fly"], simplePast:["flew"], pastParticiple:["flown"] },
+    { id: 31, de: "vergessen", infinitive:["forget"], simplePast:["forgot"], pastParticiple:["forgotten"] },
+    { id: 32, de: "vergeben; verzeihen", infinitive:["forgive"], simplePast:["forgave"], pastParticiple:["forgiven"] },
+    { id: 33, de: "gefrieren; erstarren", infinitive:["freeze"], simplePast:["froze"], pastParticiple:["frozen"] },
+    { id: 34, de: "bekommen; erhalten", infinitive:["get"], simplePast:["got"], pastParticiple:["got"] },
+    { id: 35, de: "geben", infinitive:["give"], simplePast:["gave"], pastParticiple:["given"] },
+    { id: 36, de: "gehen; fahren", infinitive:["go"], simplePast:["went"], pastParticiple:["gone"] },
+    { id: 37, de: "wachsen; anbauen; züchten", infinitive:["grow"], simplePast:["grew"], pastParticiple:["grown"] },
+    { id: 38, de: "hängen", infinitive:["hang"], simplePast:["hung"], pastParticiple:["hung"] },
+    { id: 39, de: "haben", infinitive:["have"], simplePast:["had"], pastParticiple:["had"] },
+    { id: 40, de: "hören", infinitive:["hear"], simplePast:["heard"], pastParticiple:["heard"] },
+    { id: 41, de: "(sich) verstecken", infinitive:["hide"], simplePast:["hid"], pastParticiple:["hidden"] },
+    { id: 42, de: "schlagen; treffen", infinitive:["hit"], simplePast:["hit"], pastParticiple:["hit"] },
+    { id: 43, de: "(fest)halten", infinitive:["hold"], simplePast:["held"], pastParticiple:["held"] },
+
+    { id: 44, de: "verletzen; sich wehtun", infinitive:["hurt"], simplePast:["hurt"], pastParticiple:["hurt"] },
+    { id: 45, de: "(auf)bewahren; behalten", infinitive:["keep"], simplePast:["kept"], pastParticiple:["kept"] },
+    { id: 46, de: "kennen; wissen", infinitive:["know"], simplePast:["knew"], pastParticiple:["known"] },
+    { id: 47, de: "(an)führen", infinitive:["lead"], simplePast:["led"], pastParticiple:["led"] },
+    { id: 48, de: "lernen", infinitive:["learn"], simplePast:["learnt","learned"], pastParticiple:["learnt","learned"] },
+    { id: 49, de: "(ver)lassen", infinitive:["leave"], simplePast:["left"], pastParticiple:["left"] },
+    { id: 50, de: "lassen", infinitive:["let"], simplePast:["let"], pastParticiple:["let"] },
+    { id: 51, de: "liegen", infinitive:["lie"], simplePast:["lay"], pastParticiple:["lain"] },
+    { id: 52, de: "verlieren", infinitive:["lose"], simplePast:["lost"], pastParticiple:["lost"] },
+    { id: 53, de: "machen; tun", infinitive:["make"], simplePast:["made"], pastParticiple:["made"] },
+    { id: 54, de: "bedeuten; meinen", infinitive:["mean"], simplePast:["meant"], pastParticiple:["meant"] },
+    { id: 55, de: "treffen", infinitive:["meet"], simplePast:["met"], pastParticiple:["met"] },
+    { id: 56, de: "(be)zahlen", infinitive:["pay"], simplePast:["paid"], pastParticiple:["paid"] },
+    { id: 57, de: "legen; setzen; stellen", infinitive:["put"], simplePast:["put"], pastParticiple:["put"] },
+    { id: 58, de: "lesen", infinitive:["read"], simplePast:["read"], pastParticiple:["read"] },
+    { id: 59, de: "fahren; reiten", infinitive:["ride"], simplePast:["rode"], pastParticiple:["ridden"] },
+    { id: 60, de: "klingeln; läuten", infinitive:["ring"], simplePast:["rang"], pastParticiple:["rung"] },
+    { id: 61, de: "laufen; rennen", infinitive:["run"], simplePast:["ran"], pastParticiple:["run"] },
+    { id: 62, de: "sagen", infinitive:["say"], simplePast:["said"], pastParticiple:["said"] },
+    { id: 63, de: "sehen", infinitive:["see"], simplePast:["saw"], pastParticiple:["seen"] },
+    { id: 64, de: "verkaufen", infinitive:["sell"], simplePast:["sold"], pastParticiple:["sold"] },
+    { id: 65, de: "senden; verschicken", infinitive:["send"], simplePast:["sent"], pastParticiple:["sent"] },
+    { id: 66, de: "erbauen; errichten", infinitive:["set up"], simplePast:["set up"], pastParticiple:["set up"] },
+    { id: 67, de: "schießen", infinitive:["shoot"], simplePast:["shot"], pastParticiple:["shot"] },
+    { id: 68, de: "zeigen", infinitive:["show"], simplePast:["showed"], pastParticiple:["shown"] },
+    { id: 69, de: "singen", infinitive:["sing"], simplePast:["sang"], pastParticiple:["sung"] },
+    { id: 70, de: "untergehen; sinken", infinitive:["sink"], simplePast:["sank"], pastParticiple:["sunk"] },
+    { id: 71, de: "sitzen", infinitive:["sit"], simplePast:["sat"], pastParticiple:["sat"] },
+    { id: 72, de: "schlafen", infinitive:["sleep"], simplePast:["slept"], pastParticiple:["slept"] },
+    { id: 73, de: "riechen; duften", infinitive:["smell"], simplePast:["smelt","smelled"], pastParticiple:["smelt","smelled"] },
+    { id: 74, de: "sprechen", infinitive:["speak"], simplePast:["spoke"], pastParticiple:["spoken"] },
+    { id: 75, de: "buchstabieren", infinitive:["spell"], simplePast:["spelt","spelled"], pastParticiple:["spelt","spelled"] },
+    { id: 76, de: "ausgeben; verbringen", infinitive:["spend"], simplePast:["spent"], pastParticiple:["spent"] },
+    { id: 77, de: "stehen", infinitive:["stand"], simplePast:["stood"], pastParticiple:["stood"] },
+    { id: 78, de: "stehlen", infinitive:["steal"], simplePast:["stole"], pastParticiple:["stolen"] },
+    { id: 79, de: "schwimmen", infinitive:["swim"], simplePast:["swam"], pastParticiple:["swum"] },
+    { id: 80, de: "nehmen", infinitive:["take"], simplePast:["took"], pastParticiple:["taken"] },
+    { id: 81, de: "unterrichten; lehren; beibringen", infinitive:["teach"], simplePast:["taught"], pastParticiple:["taught"] },
+    { id: 82, de: "erzählen", infinitive:["tell"], simplePast:["told"], pastParticiple:["told"] },
+    { id: 83, de: "(nach)denken; glauben", infinitive:["think"], simplePast:["thought"], pastParticiple:["thought"] },
+    { id: 84, de: "werfen", infinitive:["throw"], simplePast:["threw"], pastParticiple:["thrown"] },
+    { id: 85, de: "verstehen", infinitive:["understand"], simplePast:["understood"], pastParticiple:["understood"] },
+    { id: 86, de: "(auf)wachen; (auf)wecken", infinitive:["wake up"], simplePast:["woke up"], pastParticiple:["woken up"] },
+    { id: 87, de: "anhaben; tragen", infinitive:["wear"], simplePast:["wore"], pastParticiple:["worn"] },
+    { id: 88, de: "gewinnen; siegen", infinitive:["win"], simplePast:["won"], pastParticiple:["won"] },
+    { id: 89, de: "schreiben", infinitive:["write"], simplePast:["wrote"], pastParticiple:["written"] }
+  ];
+
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function norm(s){
+    return (s || "")
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/[’]/g, "'")
+      .replace(/\s+/g, " ");
+  }
+
+  const GOAL = ITEMS.length;
+  const STORAGE_KEY = "irregular_verbs_trainer_strict_v1";
+
+  const dewordEl = document.getElementById("deword");
+  const feedbackEl = document.getElementById("feedback");
+  const progressText = document.getElementById("progressText");
+  const progressNums = document.getElementById("progressNums");
+  const reviewinfo = document.getElementById("reviewinfo");
+  const qnEl = document.getElementById("qnum");
+  const barEl = document.getElementById("bar");
+  const bankBox = document.getElementById("bankBox");
+  const statusEl = document.getElementById("status");
+
+  const infWrap = document.getElementById("infWrap");
+  const pastWrap = document.getElementById("pastWrap");
+  const ppWrap = document.getElementById("ppWrap");
+
+  const btnCheck = document.getElementById("btnCheck");
+  const btnShow = document.getElementById("btnShow");
+  const btnNext = document.getElementById("btnNext");
+  const btnSkip = document.getElementById("btnSkip");
+  const btnStatus = document.getElementById("btnStatus");
+  const btnRestart = document.getElementById("btnRestart");
+
+  const byId = (id) => ITEMS.find(x => x.id === id);
+
+  function defaultState(){
+    const ids = ITEMS.map(it => it.id);
+    return {
+      statusById: Object.fromEntries(ids.map(id => [id, 0])),
+      mainQueue: shuffle([...ids]),
+      reviewQueue: [],
+      reviewDueAt: {},
+      step: 0,
+      currentId: null,
+      finished: false
+    };
+  }
+
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      if(!parsed || !parsed.statusById) return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  let state = loadState() || defaultState();
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function countSolved(){
+    return Object.values(state.statusById).filter(x => x === 1).length;
+  }
+
+  function countWrongOpen(){
+    return Object.values(state.statusById).filter(x => x === 2).length;
+  }
+
+  function updateHeader(){
+    const solved = countSolved();
+    const wrongOpen = countWrongOpen();
+    const percent = Math.round((solved / GOAL) * 100);
+
+    progressText.textContent = `Fortschritt: ${percent}%`;
+    progressNums.textContent = `${solved}/${GOAL} Verben richtig`;
+    reviewinfo.textContent = wrongOpen ? `Wiederholung offen: ${wrongOpen}` : "";
+    qnEl.textContent = state.currentId ? `Frage: ${state.step}` : "";
+    barEl.style.width = `${Math.min(100, (solved / GOAL) * 100)}%`;
+  }
+
+  function renderStatus(){
+    const solved = countSolved();
+    const rows = ITEMS.map(it => {
+      const st = state.statusById[it.id];
+      const label = st === 1 ? "richtig" : (st === 2 ? "wiederholen" : "offen");
+      return `${String(it.id).padEnd(3)} | ${it.infinitive.join(" / ").padEnd(16)} | ${label}`;
+    }).join("\n");
+
+    statusEl.textContent =
+      `STATUS\n------\nRichtig: ${solved}/${GOAL}\n\n` +
+      `ID  | INFINITIVE       | STATUS\n` +
+      `-----------------------------------\n` +
+      rows;
+  }
+
+  function enqueueReview(id){
+    const due = state.step + 5;
+    state.reviewDueAt[id] = Math.max(state.reviewDueAt[id] || 0, due);
+    if(!state.reviewQueue.includes(id)) state.reviewQueue.push(id);
+    state.statusById[id] = 2;
+  }
+
+  function removeFromReviewIfSolved(id){
+    state.reviewQueue = state.reviewQueue.filter(x => x !== id);
+    delete state.reviewDueAt[id];
+  }
+
+  function pickNextId(){
+    const due = state.reviewQueue.filter(id => (state.reviewDueAt[id] ?? 0) <= state.step);
+    if(due.length) return due[Math.floor(Math.random() * due.length)];
+
+    while(state.mainQueue.length){
+      const id = state.mainQueue.shift();
+      if(state.statusById[id] !== 1) return id;
+    }
+
+    if(state.reviewQueue.length){
+      let bestDue = Infinity;
+      for(const id of state.reviewQueue){
+        bestDue = Math.min(bestDue, state.reviewDueAt[id] ?? Infinity);
+      }
+      const best = state.reviewQueue.filter(id => (state.reviewDueAt[id] ?? Infinity) === bestDue);
+      return best[Math.floor(Math.random() * best.length)];
+    }
+
+    return null;
+  }
+
+  function createInputs(container, values, prefix){
+    container.innerHTML = "";
+    values.forEach((_, idx) => {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.autocomplete = "off";
+      input.id = `${prefix}-${idx}`;
+      input.dataset.index = String(idx);
+      container.appendChild(input);
+    });
+  }
+
+  function getInputs(container){
+    return Array.from(container.querySelectorAll("input"));
+  }
+
+  function compareField(userValues, acceptedValues){
+    const cleanedUser = userValues.map(norm).filter(Boolean);
+    const cleanedAccepted = acceptedValues.map(norm);
+
+    if(cleanedAccepted.length === 1){
+      return cleanedUser.length === 1 && cleanedUser[0] === cleanedAccepted[0];
+    }
+
+    if(cleanedUser.length !== cleanedAccepted.length) return false;
+
+    const sortedUser = [...cleanedUser].sort();
+    const sortedAccepted = [...cleanedAccepted].sort();
+
+    return sortedUser.every((v, i) => v === sortedAccepted[i]);
+  }
+
+  function fillSolutions(item){
+    const infInputs = getInputs(infWrap);
+    const pastInputs = getInputs(pastWrap);
+    const ppInputs = getInputs(ppWrap);
+
+    item.infinitive.forEach((val, i) => { if (infInputs[i]) infInputs[i].value = val; });
+    item.simplePast.forEach((val, i) => { if (pastInputs[i]) pastInputs[i].value = val; });
+    item.pastParticiple.forEach((val, i) => { if (ppInputs[i]) ppInputs[i].value = val; });
+  }
+
+  function setInputsDisabled(disabled){
+    [infWrap, pastWrap, ppWrap].forEach(wrap => {
+      getInputs(wrap).forEach(input => input.disabled = disabled);
+    });
+  }
+
+  function renderQuestion(){
+    const next = pickNextId();
+
+    if(next === null){
+      state.finished = true;
+      dewordEl.innerHTML = `Fertig! <span class="ok">Alles geschafft.</span>`;
+      feedbackEl.innerHTML = `<span class="ok">Du hast alle Verben erledigt.</span>`;
+      infWrap.innerHTML = "";
+      pastWrap.innerHTML = "";
+      ppWrap.innerHTML = "";
+      btnCheck.disabled = true;
+      btnShow.disabled = true;
+      btnNext.disabled = true;
+      btnSkip.disabled = true;
+      updateHeader();
+      renderStatus();
+      saveState();
+      return;
+    }
+
+    state.currentId = next;
+    state.step += 1;
+
+    const item = byId(next);
+
+    dewordEl.textContent = item.de;
+
+    createInputs(infWrap, item.infinitive, "inf");
+    createInputs(pastWrap, item.simplePast, "past");
+    createInputs(ppWrap, item.pastParticiple, "pp");
+
+    setInputsDisabled(false);
+
+    btnCheck.disabled = false;
+    btnShow.disabled = false;
+    btnSkip.disabled = false;
+    btnNext.disabled = true;
+
+    feedbackEl.innerHTML = `<span class="muted">Gib die drei Formen ein.</span>`;
+
+    updateHeader();
+    renderStatus();
+    saveState();
+
+    const firstInput = infWrap.querySelector("input");
+    if (firstInput) firstInput.focus();
+  }
+
+  btnCheck.addEventListener("click", () => {
+    if(state.finished || !state.currentId) return;
+
+    const item = byId(state.currentId);
+
+    const infUser = getInputs(infWrap).map(i => i.value);
+    const pastUser = getInputs(pastWrap).map(i => i.value);
+    const ppUser = getInputs(ppWrap).map(i => i.value);
+
+    const infOk = compareField(infUser, item.infinitive);
+    const pastOk = compareField(pastUser, item.simplePast);
+    const ppOk = compareField(ppUser, item.pastParticiple);
+
+    if(infOk && pastOk && ppOk){
+      state.statusById[item.id] = 1;
+      removeFromReviewIfSolved(item.id);
+      feedbackEl.innerHTML = `<span class="ok">Richtig!</span>`;
+    } else {
+      enqueueReview(item.id);
+      feedbackEl.innerHTML = `<span class="bad">Falsch.</span> <span class="pill">Wiederholung nach ≥ 5 Fragen</span>`;
+    }
+
+    btnNext.disabled = false;
+    updateHeader();
+    renderStatus();
+    saveState();
+  });
+
+  btnShow.addEventListener("click", () => {
+    if(state.finished || !state.currentId) return;
+
+    const item = byId(state.currentId);
+    enqueueReview(item.id);
+    fillSolutions(item);
+    setInputsDisabled(true);
+
+    feedbackEl.innerHTML =
+      `<div class="warn"><b>Lösung:</b><br>` +
+      `Infinitive: ${item.infinitive.join(" / ")}<br>` +
+      `Simple Past: ${item.simplePast.join(" / ")}<br>` +
+      `Past Participle: ${item.pastParticiple.join(" / ")}</div>`;
+
+    btnCheck.disabled = true;
+    btnNext.disabled = false;
+
+    updateHeader();
+    renderStatus();
+    saveState();
+  });
+
+  btnSkip.addEventListener("click", () => {
+    if(state.finished || !state.currentId) return;
+
+    const item = byId(state.currentId);
+    enqueueReview(item.id);
+
+    feedbackEl.innerHTML = `<span class="bad">Übersprungen.</span> <span class="pill">Wiederholung nach ≥ 5 Fragen</span>`;
+    btnNext.disabled = false;
+
+    updateHeader();
+    renderStatus();
+    saveState();
+  });
+
+  btnNext.addEventListener("click", () => {
+    if(state.finished) return;
+    renderQuestion();
+  });
+
+  btnStatus.addEventListener("click", renderStatus);
+
+  btnRestart.addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    state = defaultState();
+    statusEl.textContent = "";
+    renderQuestion();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" && !btnNext.disabled){
+      btnNext.click();
+    }
+  });
+
+  bankBox.innerHTML = ITEMS.map(it => {
+    return `<div class="bankitem"><b>${it.infinitive.join(" / ")}</b> — ${it.simplePast.join(" / ")} — ${it.pastParticiple.join(" / ")} — ${it.de}</div>`;
+  }).join("");
+
+  updateHeader();
+  renderStatus();
+  renderQuestion();
+});
+</script>
+</body>
+</html>
